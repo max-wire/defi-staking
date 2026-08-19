@@ -1,122 +1,77 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import "./App.css";
+
+import WalletButton from "./components/WalletButton";
+import StakingCard from "./components/StakingCard";
+import RewardsCard from "./components/RewardsCard";
+import StatsCard from "./components/StatsCard";
+
+import { useWallet } from "./hooks/useWallet";
+import { useStaking } from "./hooks/useStaking";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const wallet = useWallet();
+
+  const staking = useStaking(wallet.provider, wallet.account);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+    <main className="app">
+      <header className="navbar">
         <div>
-          <h1>Get started</h1>
+          <h1>StakeVault</h1>
+          <span>DeFi Staking Protocol</span>
+        </div>
+
+        <WalletButton
+          account={wallet.account}
+          isConnected={wallet.isConnected}
+          isConnecting={wallet.isConnecting}
+          onConnect={wallet.connectWallet}
+          onDisconnect={wallet.disconnectWallet}
+        />
+      </header>
+
+      {wallet.error && <div className="error">{wallet.error}</div>}
+
+      {staking.error && <div className="error">{staking.error}</div>}
+
+      {!wallet.isConnected ? (
+        <section className="welcome">
+          <h1>Put Your Assets to Work</h1>
           <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+            Stake tokens, earn rewards, and manage your position
+            from one simple DeFi dashboard.
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+        </section>
+      ) : (
+        <>
+          <StatsCard
+            totalStaked={staking.totalStaked}
+            rewardRate={staking.rewardRate}
+            rewardRemaining={staking.rewardRemaining}
+          />
 
-      <div className="ticks"></div>
+          <section className="dashboard">
+            <StakingCard
+              stakeBalance={staking.stakeBalance}
+              stakedAmount={staking.stakedAmount}
+              onApprove={staking.approveStake}
+              onStake={staking.stake}
+              onWithdraw={staking.withdraw}
+              loading={staking.loading}
+            />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+            <RewardsCard
+              rewardBalance={staking.rewardBalance}
+              earnedRewards={staking.earnedRewards}
+              onClaim={staking.claimRewards}
+              onExit={staking.exit}
+              loading={staking.loading}
+            />
+          </section>
+        </>
+      )}
+    </main>
+  );
 }
 
-export default App
+export default App;

@@ -581,6 +581,57 @@ contract StakingVaultTest is Test {
     }
 
     // ---------------------------------------------------------------
+    //                  LIVE VIEW ACCOUNTING TESTS
+    // ---------------------------------------------------------------
+
+    function test_RewardRemainingDecreasesOverTimeWithoutTransaction() public {
+        vm.prank(alice);
+        vault.stake(STAKE_AMOUNT);
+
+        uint256 remainingBefore = vault.rewardRemaining();
+
+        vm.warp(block.timestamp + 100);
+
+        uint256 remainingAfter = vault.rewardRemaining();
+
+        // 1 REWARD/sec × 100 sec = 100 REWARD emitted.
+        assertEq(remainingBefore, REWARD_FUND);
+        assertEq(remainingAfter, REWARD_FUND - 100 ether);
+    }
+
+    function test_RewardRemainingMatchesElapsedEmissionWithoutStateUpdate() public {
+        vm.prank(alice);
+        vault.stake(STAKE_AMOUNT);
+
+        vm.warp(block.timestamp + 250);
+
+        // No claim, withdraw, stake, or other accounting transaction.
+        //
+        // 1 REWARD/sec × 250 sec = 250 REWARD virtually emitted.
+        assertEq(vault.rewardRemaining(), REWARD_FUND - 250 ether);
+    }
+
+    function test_ViewFunctionsUpdateOverTimeWithoutTransaction() public {
+        vm.prank(alice);
+        vault.stake(STAKE_AMOUNT);
+
+        vm.warp(block.timestamp + 100);
+
+        // These are view calls only.
+        //
+        // No state-changing function has been called since staking.
+
+        assertEq(vault.earned(alice), 100 ether);
+        assertEq(vault.rewardRemaining(), REWARD_FUND - 100 ether);
+
+        vm.warp(block.timestamp + 50);
+
+        // Values should continue changing as block.timestamp advances.
+        assertEq(vault.earned(alice), 150 ether);
+        assertEq(vault.rewardRemaining(), REWARD_FUND - 150 ether);
+    }
+
+    // ---------------------------------------------------------------
     //                    REWARD RATE UPDATE TESTS
     // ---------------------------------------------------------------
 

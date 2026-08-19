@@ -425,19 +425,7 @@ contract StakingVault is Ownable, ReentrancyGuard, Pausable {
             return _rewardPerTokenStored;
         }
 
-        uint256 elapsed = block.timestamp - _lastUpdateTime;
-
-        if (elapsed == 0 || _rewardRate == 0) {
-            return _rewardPerTokenStored;
-        }
-
-        uint256 potentialReward = elapsed * _rewardRate;
-
-        uint256 emittedReward = potentialReward;
-
-        if (emittedReward > _rewardRemaining) {
-            emittedReward = _rewardRemaining;
-        }
+        uint256 emittedReward = _emittedSinceLastUpdate();
 
         if (emittedReward == 0) {
             return _rewardPerTokenStored;
@@ -488,14 +476,57 @@ contract StakingVault is Ownable, ReentrancyGuard, Pausable {
      *         emitted.
      *
      * @return The remaining reward emission budget.
+     *
+     * @dev
+     * The returned value includes REWARD that has accrued for emission
+     * since the last state-changing accounting update. This means the
+     * value remains accurate between transactions.
      */
-    function rewardRemaining() external view returns (uint256) {
-        return _rewardRemaining;
+    function rewardRemaining() public view returns (uint256) {
+        uint256 emittedReward = _emittedSinceLastUpdate();
+
+        if (emittedReward >= _rewardRemaining) {
+            return 0;
+        }
+
+        return _rewardRemaining - emittedReward;
     }
 
     // =============================================================
     //                   INTERNAL ACCOUNTING
     // =============================================================
+
+    /**
+     * @notice Calculates REWARD emitted since the last global accounting update.
+     *
+     * @dev
+     * This function does not modify contract state.
+     *
+     * The calculated emission is capped by `_rewardRemaining`, ensuring
+     * the vault can never account for more REWARD than has been funded.
+     *
+     * This calculation is used by both view functions and state-changing
+     * reward accounting functions.
+     */
+    function _emittedSinceLastUpdate() internal view returns (uint256) {
+        if (_totalStaked == 0 || _rewardRate == 0 || _rewardRemaining == 0) {
+            return 0;
+        }
+
+        uint256 elapsed = block.timestamp - _lastUpdateTime;
+
+        if (elapsed == 0) {
+            return 0;
+        }
+
+        uint256 potentialReward = elapsed * _rewardRate;
+
+        if (potentialReward > _rewardRemaining) {
+            return _rewardRemaining;
+        }
+
+        return potentialReward;
+    }
 
     /**
      * @notice Updates global reward accounting and optionally a user's
@@ -511,34 +542,22 @@ contract StakingVault is Ownable, ReentrancyGuard, Pausable {
      * not be emitted retroactively.
      */
     function _updateReward(address account) internal {
-        uint256 currentTime = block.timestamp;
+        uint256 emittedReward = _emittedSinceLastUpdate();
 
-        if (_totalStaked > 0 && currentTime > _lastUpdateTime) {
-            uint256 elapsed = currentTime - _lastUpdateTime;
+        if (emittedReward > 0) {
+            _rewardPerTokenStored += (emittedReward * PRECISION) / _totalStaked;
 
-            if (_rewardRate > 0 && _rewardRemaining > 0) {
-                uint256 potentialReward = elapsed * _rewardRate;
-
-                uint256 emittedReward = potentialReward;
-
-                if (emittedReward > _rewardRemaining) {
-                    emittedReward = _rewardRemaining;
-                }
-
-                if (emittedReward > 0) {
-                    _rewardPerTokenStored += (emittedReward * PRECISION) / _totalStaked;
-
-                    _rewardRemaining -= emittedReward;
-                }
-            }
+            _rewardRemaining -= emittedReward;
         }
 
-        _lastUpdateTime = currentTime;
+        _lastUpdateTime = block.timestamp;
 
         if (account != address(0)) {
             UserInfo storage user = _users[account];
 
-            user.rewards = earned(account);
+            uint256 pending = (user.amount * (_rewardPerTokenStored - user.rewardPerTokenPaid)) / PRECISION;
+
+            user.rewards += pending;
             user.rewardPerTokenPaid = _rewardPerTokenStored;
         }
     }
