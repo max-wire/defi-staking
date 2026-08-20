@@ -1,8 +1,5 @@
 export function formatTokenAmount(value, options = {}) {
-  const {
-    maxDecimals = 2,
-    minDecimals = 0,
-  } = options;
+  const { maxDecimals = 2, minDecimals = 0 } = options;
 
   if (value === null || value === undefined || value === "") {
     return "0";

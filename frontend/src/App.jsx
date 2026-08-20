@@ -25,6 +25,7 @@ function App() {
           account={wallet.account}
           isConnected={wallet.isConnected}
           isConnecting={wallet.isConnecting}
+          connectors={wallet.connectors}
           onConnect={wallet.connectWallet}
           onDisconnect={wallet.disconnectWallet}
         />
@@ -38,8 +39,8 @@ function App() {
         <section className="welcome">
           <h1>Put Your Assets to Work</h1>
           <p>
-            Stake tokens, earn rewards, and manage your position
-            from one simple DeFi dashboard.
+            Stake tokens, earn rewards, and manage your position from one simple
+            DeFi dashboard.
           </p>
         </section>
       ) : (

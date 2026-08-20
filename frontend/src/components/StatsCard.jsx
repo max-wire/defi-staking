@@ -7,8 +7,7 @@ function StatsCard({ totalStaked, rewardRate, rewardRemaining }) {
         <span className="stat-label">Total Staked</span>
 
         <strong className="stat-value">
-          {formatTokenAmount(totalStaked)}{" "}
-          <span>STAKE</span>
+          {formatTokenAmount(totalStaked)} <span>STAKE</span>
         </strong>
       </div>
 
@@ -27,8 +26,7 @@ function StatsCard({ totalStaked, rewardRate, rewardRemaining }) {
         <span className="stat-label">Remaining Rewards</span>
 
         <strong className="stat-value">
-          {formatTokenAmount(rewardRemaining)}{" "}
-          <span>REWARD</span>
+          {formatTokenAmount(rewardRemaining)} <span>REWARD</span>
         </strong>
       </div>
     </section>

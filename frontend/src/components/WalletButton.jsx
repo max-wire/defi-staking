@@ -4,14 +4,17 @@ function WalletButton({
   account,
   isConnected,
   isConnecting,
+  connectors,
   onConnect,
   onDisconnect,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showWallets, setShowWallets] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const shortenAddress = (address) => {
     if (!address) return "";
+
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
@@ -23,6 +26,7 @@ function WalletButton({
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(account);
+
       setCopied(true);
 
       setTimeout(() => {
@@ -45,15 +49,14 @@ function WalletButton({
 
           <span>{shortenAddress(account)}</span>
 
-          <span className="wallet-chevron">
-            {isOpen ? "▲" : "▼"}
-          </span>
+          <span className="wallet-chevron">{isOpen ? "▲" : "▼"}</span>
         </button>
 
         {isOpen && (
           <div className="wallet-dropdown">
             <div className="wallet-account">
               <span>Connected Wallet</span>
+
               <strong>{shortenAddress(account)}</strong>
             </div>
 
@@ -79,14 +82,35 @@ function WalletButton({
   }
 
   return (
-    <button
-      type="button"
-      className="connect-wallet"
-      onClick={onConnect}
-      disabled={isConnecting}
-    >
-      {isConnecting ? "Connecting..." : "Connect Wallet"}
-    </button>
+    <div className="connect-wallet-wrapper">
+      <button
+        type="button"
+        className="connect-wallet"
+        onClick={() => setShowWallets((previous) => !previous)}
+        disabled={isConnecting}
+      >
+        {isConnecting ? "Connecting..." : "Connect Wallet"}
+      </button>
+
+      {showWallets && (
+        <div className="wallet-selector">
+          {connectors.map((connector) => (
+            <button
+              key={connector.uid}
+              type="button"
+              className="wallet-option"
+              disabled={isConnecting}
+              onClick={() => {
+                onConnect(connector);
+                setShowWallets(false);
+              }}
+            >
+              {connector.name}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

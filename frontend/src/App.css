@@ -4,7 +4,11 @@
 
 :root {
   font-family:
-    Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
     sans-serif;
 
   color: #f5f7fa;
@@ -18,7 +22,6 @@
   --surface: #0f141d;
   --surface-hover: #151c27;
   --surface-light: #19212d;
-
   --border: #222b38;
   --border-light: #2b3747;
 
@@ -67,6 +70,7 @@ body {
 
 .app {
   min-height: 100vh;
+
   background:
     radial-gradient(
       circle at 80% 0%,
@@ -89,6 +93,7 @@ body {
   justify-content: space-between;
 
   border-bottom: 1px solid var(--border);
+
   background: rgba(8, 11, 18, 0.9);
 
   position: sticky;
@@ -106,13 +111,16 @@ body {
 
 .navbar h1 {
   margin: 0;
+
   font-size: 18px;
   font-weight: 700;
+
   letter-spacing: -0.02em;
 }
 
 .navbar p {
   margin: 0;
+
   color: var(--text-secondary);
   font-size: 13px;
 }
@@ -127,12 +135,14 @@ body {
 .app > .stats,
 .app > .dashboard {
   width: min(1200px, calc(100% - 48px));
+
   margin-left: auto;
   margin-right: auto;
 }
 
 .navbar {
   width: 100%;
+
   padding-left: max(24px, calc((100% - 1200px) / 2));
   padding-right: max(24px, calc((100% - 1200px) / 2));
 }
@@ -154,18 +164,22 @@ body {
 
 .welcome h2 {
   max-width: 600px;
+
   margin: 0 0 14px;
 
   font-size: clamp(36px, 5vw, 58px);
   line-height: 1.05;
+
   letter-spacing: -0.04em;
 }
 
 .welcome p {
   max-width: 560px;
+
   margin: 0;
 
   color: var(--text-secondary);
+
   font-size: 17px;
   line-height: 1.7;
 }
@@ -176,6 +190,7 @@ body {
 
 .error {
   margin-top: 24px;
+
   padding: 14px 16px;
 
   border: 1px solid rgba(255, 92, 114, 0.3);
@@ -220,13 +235,16 @@ body {
   margin-bottom: 10px;
 
   color: var(--text-secondary);
+
   font-size: 13px;
 }
 
 .stat-value {
   color: var(--text);
+
   font-size: 25px;
   font-weight: 700;
+
   letter-spacing: -0.02em;
 }
 
@@ -276,6 +294,7 @@ body {
   justify-content: space-between;
 
   padding: 14px 0;
+
   border-bottom: 1px solid var(--border);
 }
 
@@ -285,6 +304,7 @@ body {
 
 .balance-label {
   color: var(--text-secondary);
+
   font-size: 13px;
 }
 
@@ -320,6 +340,7 @@ input::placeholder {
 
 input:focus {
   border-color: var(--accent);
+
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
@@ -329,6 +350,7 @@ input:focus {
 
 button {
   border: none;
+
   font: inherit;
   cursor: pointer;
 }
@@ -340,6 +362,7 @@ button:disabled {
 
 .connect-wallet {
   height: 42px;
+
   padding: 0 18px;
 
   color: white;
@@ -401,6 +424,7 @@ button:disabled {
   height: 8px;
 
   border-radius: 50%;
+
   background: var(--success);
 
   box-shadow: 0 0 8px rgba(50, 213, 131, 0.5);
@@ -413,10 +437,12 @@ button:disabled {
 
 .wallet-dropdown {
   position: absolute;
+
   top: calc(100% + 10px);
   right: 0;
 
   width: 230px;
+
   padding: 8px;
 
   background: var(--surface-light);
@@ -437,9 +463,11 @@ button:disabled {
 
 .wallet-account span {
   display: block;
+
   margin-bottom: 5px;
 
   color: var(--text-muted);
+
   font-size: 11px;
 }
 
@@ -472,17 +500,84 @@ button:disabled {
 }
 
 /* =========================================================
+   WAGMI WALLET CONNECTOR SELECTOR
+   ========================================================= */
+
+.connect-wallet-wrapper {
+  position: relative;
+}
+
+.wallet-selector {
+  position: absolute;
+
+  top: calc(100% + 10px);
+  right: 0;
+
+  min-width: 220px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 10px;
+
+  background: var(--surface-light);
+
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+
+  z-index: 50;
+}
+
+.wallet-option {
+  width: 100%;
+
+  padding: 12px 16px;
+
+  color: var(--text);
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.wallet-option:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border-light);
+}
+
+.wallet-option:disabled {
+  cursor: not-allowed;
+}
+
+/* =========================================================
    STAKING ACTIONS
    ========================================================= */
 
 .actions {
   display: flex;
+
   gap: 10px;
+
   margin-top: 20px;
 }
 
 .actions button {
   min-height: 42px;
+
   padding: 0 16px;
 
   color: white;
@@ -503,6 +598,7 @@ button:disabled {
 .actions .secondary {
   color: var(--text);
   background: var(--surface-light);
+
   border: 1px solid var(--border);
 }
 
@@ -517,6 +613,7 @@ button:disabled {
 @media (max-width: 800px) {
   .navbar {
     height: auto;
+
     min-height: 76px;
 
     padding-top: 16px;
@@ -550,6 +647,7 @@ button:disabled {
 
   .welcome {
     min-height: calc(100vh - 76px);
+
     padding: 40px 0;
   }
 
@@ -571,6 +669,7 @@ button:disabled {
   .wallet-address,
   .connect-wallet {
     height: 38px;
+
     padding: 0 12px;
   }
 
@@ -603,12 +702,14 @@ button:disabled {
 
 .card-eyebrow {
   display: block;
+
   margin-bottom: 5px;
 
   color: var(--text-muted);
 
   font-size: 10px;
   font-weight: 700;
+
   letter-spacing: 0.12em;
 }
 
@@ -636,13 +737,17 @@ button:disabled {
 
 .stake-icon {
   color: #ffffff;
+
   background: var(--accent-soft);
+
   border: 1px solid rgba(124, 92, 255, 0.3);
 }
 
 .reward-icon {
   color: #ffffff;
+
   background: var(--success-soft);
+
   border: 1px solid rgba(50, 213, 131, 0.3);
 }
 
@@ -661,6 +766,7 @@ button:disabled {
   padding: 15px;
 
   background: var(--bg);
+
   border: 1px solid var(--border);
   border-radius: 10px;
 }
@@ -671,6 +777,7 @@ button:disabled {
   margin-bottom: 8px;
 
   color: var(--text-secondary);
+
   font-size: 12px;
 }
 
@@ -686,6 +793,7 @@ button:disabled {
 
 .balance-item.highlight {
   border-color: rgba(50, 213, 131, 0.2);
+
   background: var(--success-soft);
 }
 
@@ -707,6 +815,7 @@ button:disabled {
 
 .amount-label span {
   color: var(--text-secondary);
+
   font-size: 12px;
 }
 
@@ -714,7 +823,6 @@ button:disabled {
   padding: 3px 7px;
 
   color: var(--accent);
-
   background: var(--accent-soft);
 
   border-radius: 5px;
@@ -757,9 +865,11 @@ button:disabled {
 
 .reward-display {
   margin-top: 22px;
+
   padding: 20px;
 
   background: var(--accent-soft);
+
   border: 1px solid rgba(124, 92, 255, 0.18);
   border-radius: 10px;
 }
@@ -770,6 +880,7 @@ button:disabled {
   margin-bottom: 8px;
 
   color: var(--text-secondary);
+
   font-size: 12px;
 }
 
@@ -778,11 +889,13 @@ button:disabled {
 
   font-size: 26px;
   font-weight: 700;
+
   letter-spacing: -0.02em;
 }
 
 .reward-display small {
   color: var(--text-secondary);
+
   font-size: 12px;
   font-weight: 600;
 }
@@ -819,6 +932,7 @@ button:disabled {
 
 .secondary-action {
   color: var(--text);
+
   background: var(--surface-light);
 
   border: 1px solid var(--border);
@@ -837,8 +951,10 @@ button:disabled {
 
 .stat-value span {
   color: var(--text-secondary);
+
   font-size: 12px;
   font-weight: 600;
+
   letter-spacing: 0;
 }
 
@@ -853,5 +969,10 @@ button:disabled {
 
   .actions {
     grid-template-columns: 1fr;
+  }
+
+  .wallet-selector {
+    right: 0;
+    min-width: 200px;
   }
 }

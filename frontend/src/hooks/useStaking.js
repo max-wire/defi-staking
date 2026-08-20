@@ -90,14 +90,12 @@ export function useStaking(provider, account) {
       setRewardRemaining(formatUnits(rewardRemainingRaw, 18));
     } catch (err) {
       setError(
-        err?.shortMessage ||
-          err?.message ||
-          "Failed to load staking data.",
+        err?.shortMessage || err?.message || "Failed to load staking data.",
       );
     }
   }, [provider, account, getContracts]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!provider || !account) return;
 
     let mounted = true;
@@ -146,9 +144,7 @@ export function useStaking(provider, account) {
 
         return tx;
       } catch (err) {
-        setError(
-          err?.shortMessage || err?.message || "Approval failed.",
-        );
+        setError(err?.shortMessage || err?.message || "Approval failed.");
         throw err;
       } finally {
         setLoading(false);
@@ -178,9 +174,7 @@ export function useStaking(provider, account) {
 
         return tx;
       } catch (err) {
-        setError(
-          err?.shortMessage || err?.message || "Staking failed.",
-        );
+        setError(err?.shortMessage || err?.message || "Staking failed.");
         throw err;
       } finally {
         setLoading(false);
@@ -210,9 +204,7 @@ export function useStaking(provider, account) {
 
         return tx;
       } catch (err) {
-        setError(
-          err?.shortMessage || err?.message || "Withdrawal failed.",
-        );
+        setError(err?.shortMessage || err?.message || "Withdrawal failed.");
         throw err;
       } finally {
         setLoading(false);
@@ -239,11 +231,7 @@ export function useStaking(provider, account) {
 
       return tx;
     } catch (err) {
-      setError(
-        err?.shortMessage ||
-          err?.message ||
-          "Reward claim failed.",
-      );
+      setError(err?.shortMessage || err?.message || "Reward claim failed.");
       throw err;
     } finally {
       setLoading(false);
@@ -268,9 +256,7 @@ export function useStaking(provider, account) {
 
       return tx;
     } catch (err) {
-      setError(
-        err?.shortMessage || err?.message || "Exit failed.",
-      );
+      setError(err?.shortMessage || err?.message || "Exit failed.");
       throw err;
     } finally {
       setLoading(false);
