@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAccount, useConnect, useDisconnect, useChainId } from "wagmi";
 import { BrowserProvider } from "ethers";
 
-const ANVIL_CHAIN_ID = 31337;
+const SEPOLIA_CHAIN_ID = 11155111;
 
 export function useWallet() {
   const [provider, setProvider] = useState(null);
@@ -91,7 +91,7 @@ export function useWallet() {
 
         await connectAsync({
           connector: selectedConnector,
-          chainId: ANVIL_CHAIN_ID,
+          chainId: SEPOLIA_CHAIN_ID,
         });
       } catch (err) {
         console.error("Wallet connection error:", err);
@@ -132,7 +132,7 @@ export function useWallet() {
     isConnecting,
     isInitializing,
 
-    isConnected: Boolean(account && provider) && chainId === ANVIL_CHAIN_ID,
+    isConnected: Boolean(account && provider) && chainId === SEPOLIA_CHAIN_ID,
 
     connectWallet,
     disconnectWallet,

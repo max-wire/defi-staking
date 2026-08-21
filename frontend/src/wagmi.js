@@ -2,17 +2,17 @@ import { createConfig, http } from "wagmi";
 import { defineChain } from "viem";
 import { metaMask, walletConnect, coinbaseWallet } from "wagmi/connectors";
 
-export const foundryLocal = defineChain({
-  id: 31337,
-  name: "Foundry Local",
+export const sepolia = defineChain({
+  id: 11155111,
+  name: "Sepolia",
   nativeCurrency: {
-    name: "Ether",
+    name: "Sepolia Ether",
     symbol: "ETH",
     decimals: 18,
   },
   rpcUrls: {
     default: {
-      http: ["http://127.0.0.1:8545"],
+      http: ["https://ethereum-sepolia-rpc.publicnode.com"],
     },
   },
 });
@@ -20,7 +20,7 @@ export const foundryLocal = defineChain({
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
 export const config = createConfig({
-  chains: [foundryLocal],
+  chains: [sepolia],
 
   connectors: [
     metaMask(),
@@ -41,6 +41,6 @@ export const config = createConfig({
   ],
 
   transports: {
-    [foundryLocal.id]: http("http://127.0.0.1:8545"),
+    [sepolia.id]: http("https://ethereum-sepolia-rpc.publicnode.com"),
   },
 });

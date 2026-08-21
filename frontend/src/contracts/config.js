@@ -1,10 +1,10 @@
 export const CONTRACTS = {
-  stakeToken: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  rewardToken: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-  stakingVault: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  stakeToken: "0x6De64f2A0D3C1c93cECB67eF06D4a22ff6e00999",
+  rewardToken: "0x1D1A21d7468040b306d06E3f1c6c30eeD249F380",
+  stakingVault: "0x9A8a5DdEC15F4B8822BF10E849B5C465D6cf2C1e",
 };
 
 export const NETWORK = {
-  chainId: 31337,
-  chainName: "Foundry Local",
+  chainId: 11155111,
+  chainName: "Ethereum Sepolia",
 };
