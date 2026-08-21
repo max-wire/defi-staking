@@ -14,7 +14,7 @@ Due to a temporary network issue with the Sky network, StakeVault was deployed t
 
 ## Live Application
 
-**https://defi-staking-swart.vercel.app/**
+**https://defi-staking-c6qp6kvzu-wire4.vercel.app/**
 
 ## Network
 
