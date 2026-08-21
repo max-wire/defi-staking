@@ -4,11 +4,106 @@ A full-stack DeFi staking protocol built with **Solidity, Foundry, React, Vite, 
 
 StakeVault allows users to stake ERC-20 tokens and earn rewards over time based on a configurable reward emission rate. The protocol uses a **finite reward pool**, ensuring that rewards cannot exceed the amount of reward tokens funded into the staking vault.
 
-The project includes a complete smart contract system, a comprehensive Foundry test suite, deployment scripts, and a React frontend that interacts directly with the deployed contracts.
+The project includes a complete smart contract system, a comprehensive Foundry test suite, deployment scripts, and a React frontend that interacts directly with deployed smart contracts.
 
-## Features
+---
 
-### Smart Contracts
+# Live Sepolia Deployment
+
+Due to a temporary network issue with the Sky network, StakeVault was deployed to the **Ethereum Sepolia testnet** as requested by the project team.
+
+## Live Application
+
+**https://defi-staking-swart.vercel.app/**
+
+## Network
+
+* **Network:** Ethereum Sepolia
+* **Chain ID:** 11155111
+* **Deployment Type:** Testnet
+* **Frontend:** Vercel
+* **Wallet:** MetaMask / WalletConnect / Coinbase Wallet
+
+## Deployed Smart Contracts
+
+| Contract     | Sepolia Address                              |
+| ------------ | -------------------------------------------- |
+| StakeToken   | `0x6De64f2A0D3C1c93cECB67eF06D4a22ff6e00999` |
+| RewardToken  | `0x1D1A21d7468040b306d06E3f1c6c30eeD249F380` |
+| StakingVault | `0x9A8a5DdEC15F4B8822BF10E849B5C465D6cf2C1e` |
+
+The frontend is configured with the deployed Sepolia contract addresses and interacts with the contracts using **Wagmi and Ethers.js**.
+
+The live deployment has been tested for:
+
+* Wallet connection
+* STAKE balance retrieval
+* REWARD balance retrieval
+* Staking
+* Token approval
+* Reward accrual
+* Reward claiming
+* Withdrawals
+* Exit functionality
+* Live protocol statistics
+
+---
+
+# Frontend Deployment
+
+The StakeVault frontend is deployed using **Vercel**.
+
+## Production URL
+
+**https://defi-staking-swart.vercel.app/**
+
+The Vercel deployment is connected to the GitHub repository and can be automatically updated when changes are pushed to the `main` branch.
+
+The frontend is configured for Ethereum Sepolia:
+
+```text
+Chain ID: 11155111
+Network: Ethereum Sepolia
+```
+
+The frontend interacts directly with the deployed smart contracts.
+
+**No private keys are exposed to the frontend or stored in the Vercel deployment.**
+
+The deployment wallet and frontend configuration are intentionally separated:
+
+```text
+Deployment wallet
+       │
+       │ PRIVATE_KEY
+       ▼
+    Foundry
+       │
+       │ deploys
+       ▼
+Ethereum Sepolia
+       │
+       ├── StakeToken
+       ├── RewardToken
+       └── StakingVault
+
+Frontend
+   │
+   ▼
+Vercel
+   │
+   ▼
+Contract addresses
+   │
+   ▼
+Ethereum Sepolia
+```
+
+---
+
+# Features
+
+## Smart Contracts
 
 * ERC-20 `StakeToken`
 * ERC-20 `RewardToken`
@@ -28,9 +123,9 @@ The project includes a complete smart contract system, a comprehensive Foundry t
 * Custom errors
 * Event emission for major protocol actions
 
-### Frontend
+## Frontend
 
-The project also includes a React frontend that integrates directly with the deployed smart contracts.
+The project includes a React frontend that integrates directly with the deployed smart contracts.
 
 Features include:
 
@@ -39,6 +134,7 @@ Features include:
 * WalletConnect support
 * Coinbase Wallet support
 * Automatic network detection
+* Ethereum Sepolia support
 * Local Anvil network support
 * STAKE token balance display
 * REWARD token balance display
@@ -66,20 +162,20 @@ Features include:
                                   │
                                   │ stake()
                                   ▼
-┌──────────────┐          ┌─────────────────┐          ┌──────────────┐
-│              │          │                 │          │              │
-│    Users     ├─────────►│   StakingVault  │◄─────────┤    Owner     │
-│              │          │                 │          │              │
-└──────────────┘          └────────┬────────┘          └──────┬───────┘
-                                   │                          │
-                                   │                          │
-                         ┌─────────▼─────────┐       fundRewards()
-                         │                   │◄───────────────┘
-                         │  Reward Accounting│
+┌──────────────┐           ┌─────────────────┐           ┌──────────────┐
+│              │           │                 │           │              │
+│    Users     ├──────────►│   StakingVault  │◄──────────┤    Owner     │
+│              │           │                 │           │              │
+└──────────────┘           └────────┬────────┘           └──────┬───────┘
+                                   │                            │
+                                   │                            │
+                         ┌─────────▼─────────┐          fundRewards()
+                         │                   │◄──────────────────┘
+                         │ Reward Accounting │
                          │                   │
-                         │ rewardPerToken    │
-                         │ earned()          │
-                         │ rewardRemaining   │
+                         │ rewardPerToken   │
+                         │ earned()         │
+                         │ rewardRemaining  │
                          └─────────┬─────────┘
                                    │
                                    │ claimRewards()
@@ -90,7 +186,9 @@ Features include:
                          └─────────────────┘
 ```
 
-## Protocol Flow
+---
+
+# Protocol Flow
 
 ```text
 User
@@ -106,23 +204,20 @@ StakingVault.stake()
  ├── Updates totalStaked
  ├── Updates user balance
  └── Updates reward accounting
-
-        Time passes
-             │
-             ▼
-
-     rewardPerToken increases
-             │
-             ▼
-
-       User accrues rewards
-             │
-             ├──────────────► claimRewards()
-             │
-             └──────────────► exit()
-                                  │
-                                  ├── Claims rewards
-                                  └── Withdraws all STAKE
+         │
+         │ Time passes
+         ▼
+   rewardPerToken increases
+         │
+         ▼
+    User accrues rewards
+         │
+         ├──────────────► claimRewards()
+         │
+         └──────────────► exit()
+                               │
+                               ├── Claims rewards
+                               └── Withdraws all STAKE
 ```
 
 ---
@@ -201,7 +296,7 @@ defi-staking/
 
 # Smart Contract Testing
 
-The protocol is tested using Foundry.
+The protocol is tested using **Foundry**.
 
 The current test suite contains **80 passing tests** covering the STAKE token, REWARD token, and `StakingVault`.
 
@@ -274,6 +369,8 @@ forge test -vvv
 
 # Local Development
 
+The production testnet deployment is Ethereum Sepolia. **Anvil is provided for local development and testing only.**
+
 ## Prerequisites
 
 Install:
@@ -282,10 +379,6 @@ Install:
 * Node.js
 * npm
 * A browser wallet such as MetaMask
-
-Foundry documentation:
-
-[Foundry Book](https://book.getfoundry.sh/?utm_source=chatgpt.com)
 
 ## Installation
 
@@ -345,13 +438,76 @@ The local chain ID is:
 
 # Deployment
 
+## Sepolia Testnet
+
+The production testnet deployment was performed using **Foundry**.
+
+Create a `.env` file:
+
+```env
+PRIVATE_KEY=your_private_key
+SEPOLIA_RPC_URL=your_sepolia_rpc_url
+```
+
+Deploy using:
+
+```bash
+forge script script/DeployStaking.s.sol:DeployStaking \
+    --rpc-url $SEPOLIA_RPC_URL \
+    --broadcast
+```
+
+The deployment creates:
+
+1. `StakeToken`
+2. `RewardToken`
+3. `StakingVault`
+
+The deployment script also:
+
+* Funds the reward pool
+* Configures the reward emission rate
+
+After deployment, the resulting contract addresses are configured in:
+
+```text
+frontend/src/contracts/config.js
+```
+
+For the current Sepolia deployment:
+
+```javascript
+export const CONTRACTS = {
+  stakeToken: "0x6De64f2A0D3C1c93cECB67eF06D4a22ff6e00999",
+  rewardToken: "0x1D1A21d7468040b306d06E3f1c6c30eeD249F380",
+  stakingVault: "0x9A8a5DdEC15F4B8822BF10E849B5C465D6cf2C1e",
+};
+
+export const NETWORK = {
+  chainId: 11155111,
+  chainName: "Ethereum Sepolia",
+};
+```
+
+> **Security:** Never commit `.env` or private keys to the repository. The private key is only used by the deployment environment and is not required by the frontend.
+
+---
+
+# Local Development Deployment
+
+For local development, start Anvil:
+
+```bash
+anvil
+```
+
 Create a `.env` file:
 
 ```env
 PRIVATE_KEY=your_private_key
 ```
 
-Deploy the protocol:
+Deploy locally:
 
 ```bash
 forge script script/DeployStaking.s.sol:DeployStaking \
@@ -359,18 +515,7 @@ forge script script/DeployStaking.s.sol:DeployStaking \
     --broadcast
 ```
 
-The deployment script deploys:
-
-1. `StakeToken`
-2. `RewardToken`
-3. `StakingVault`
-
-It also:
-
-* Funds the reward pool
-* Configures the reward emission rate
-
-After deployment, update the frontend contract configuration.
+After deployment, configure the frontend with the locally deployed contract addresses.
 
 Example:
 
@@ -409,14 +554,16 @@ Start the development server:
 npm run dev
 ```
 
-The application will connect to the local Anvil blockchain.
+For local development, the application can connect to the local Anvil blockchain.
+
+For the deployed application, use the production configuration for **Ethereum Sepolia**.
 
 Make sure:
 
-1. Anvil is running.
+1. The selected network matches the configured contract network.
 2. The contracts have been deployed.
 3. The contract addresses are configured correctly.
-4. Your wallet is connected to the Foundry Local network.
+4. Your wallet is connected to the correct network.
 
 Update the contract configuration in:
 
@@ -428,7 +575,19 @@ frontend/src/contracts/config.js
 
 # Wallet Network Configuration
 
-For local development, configure your wallet with:
+## Ethereum Sepolia
+
+For the live deployment, configure your wallet to use:
+
+```text
+Network Name: Ethereum Sepolia
+Chain ID: 11155111
+Currency Symbol: ETH
+```
+
+## Foundry Local
+
+For local development:
 
 ```text
 Network Name: Foundry Local
@@ -526,6 +685,8 @@ The protocol includes several security mechanisms:
 * Reward emission caps
 * Accounting tests and invariants
 
+The frontend does not require or expose the deployment wallet's private key.
+
 ---
 
 # Technology Stack
@@ -535,7 +696,8 @@ The protocol includes several security mechanisms:
 * Solidity
 * Foundry
 * OpenZeppelin
-* Anvil
+* Anvil for local development
+* Ethereum Sepolia for testnet deployment
 
 ## Frontend
 
@@ -546,6 +708,7 @@ The protocol includes several security mechanisms:
 * WalletConnect
 * MetaMask
 * Coinbase Wallet
+* Vercel
 
 ---
 
@@ -558,7 +721,7 @@ Potential future improvements include:
 * Reward lockup periods
 * Early withdrawal penalties
 * Governance-controlled reward parameters
-* Mainnet or testnet deployment
+* Mainnet deployment
 * Subgraph or indexing support
 * Historical staking analytics
 * APY calculations
