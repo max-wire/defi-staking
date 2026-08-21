@@ -55,7 +55,7 @@ The StakeVault frontend is deployed using **Vercel**.
 
 ## Production URL
 
-**https://defi-staking-swart.vercel.app/**
+**https://defi-staking-c6qp6kvzu-wire4.vercel.app/**
 
 The Vercel deployment is connected to the GitHub repository and can be automatically updated when changes are pushed to the `main` branch.
 
