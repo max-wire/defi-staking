@@ -9,11 +9,7 @@ export function useWallet() {
   const [error, setError] = useState(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
-  const {
-    address: account,
-    isConnected: wagmiIsConnected,
-    connector,
-  } = useAccount();
+  const { address: account, isConnected: wagmiIsConnected } = useAccount();
 
   const chainId = useChainId();
 
@@ -22,15 +18,14 @@ export function useWallet() {
   const { disconnect } = useDisconnect();
 
   /**
-   * Convert the Wagmi connector provider into an ethers BrowserProvider.
-   *
-   * This allows the existing useStaking hook to continue using ethers.
+   * Create an Ethers BrowserProvider from the
+   * browser wallet's EIP-1193 provider.
    */
   useEffect(() => {
     let mounted = true;
 
     const initializeProvider = async () => {
-      if (!connector || !wagmiIsConnected) {
+      if (!wagmiIsConnected || !account || chainId !== SEPOLIA_CHAIN_ID) {
         if (mounted) {
           setProvider(null);
           setIsInitializing(false);
@@ -40,13 +35,16 @@ export function useWallet() {
       }
 
       try {
-        const walletProvider = await connector.getProvider();
-
-        if (!walletProvider) {
-          throw new Error("Wallet provider is not available.");
+        if (!window.ethereum) {
+          throw new Error(
+            "No browser wallet detected. Please install MetaMask.",
+          );
         }
 
-        const browserProvider = new BrowserProvider(walletProvider);
+        const browserProvider = new BrowserProvider(window.ethereum);
+
+        // Verify that the provider is usable.
+        await browserProvider.getNetwork();
 
         if (mounted) {
           setProvider(browserProvider);
@@ -76,12 +74,10 @@ export function useWallet() {
     return () => {
       mounted = false;
     };
-  }, [connector, wagmiIsConnected]);
+  }, [account, wagmiIsConnected, chainId]);
 
   /**
    * Connect to a selected wallet connector.
-   *
-   * The wallet connection and network switching are handled by Wagmi.
    */
   const connectWallet = useCallback(
     async (selectedConnector) => {
@@ -126,7 +122,6 @@ export function useWallet() {
     account,
     provider,
     chainId,
-    connector,
     connectors,
     error,
     isConnecting,
