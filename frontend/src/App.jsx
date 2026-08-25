@@ -8,6 +8,9 @@ import StatsCard from "./components/StatsCard";
 import { useWallet } from "./hooks/useWallet";
 import { useStaking } from "./hooks/useStaking";
 
+import { CONTRACTS } from "./contracts/config";
+import etherAuthorityLogo from "./assets/etherauthority-logo.png";
+
 function App() {
   const wallet = useWallet();
 
@@ -71,6 +74,62 @@ function App() {
           </section>
         </>
       )}
+
+      <footer className="site-footer">
+        <div>
+          <strong>StakeVault</strong>
+          <span>DeFi Staking Protocol</span>
+        </div>
+
+        <div className="contract-addresses">
+          <span>
+            StakeToken:{" "}
+            <a
+              href={`https://sepolia.etherscan.io/address/${CONTRACTS.stakeToken}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {CONTRACTS.stakeToken}
+            </a>
+          </span>
+
+          <span>
+            RewardToken:{" "}
+            <a
+              href={`https://sepolia.etherscan.io/address/${CONTRACTS.rewardToken}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {CONTRACTS.rewardToken}
+            </a>
+          </span>
+
+          <span>
+            StakingVault:{" "}
+            <a
+              href={`https://sepolia.etherscan.io/address/${CONTRACTS.stakingVault}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {CONTRACTS.stakingVault}
+            </a>
+          </span>
+        </div>
+
+        <div className="footer-credit">
+          <span>Built by: Maxwell Wire</span>
+
+          <div className="organization">
+            <img
+              src={etherAuthorityLogo}
+              alt="EtherAuthority"
+              className="etherauthority-logo"
+            />
+
+            <span>Organization: EtherAuthority</span>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

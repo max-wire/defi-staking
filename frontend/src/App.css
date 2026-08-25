@@ -118,7 +118,7 @@ body {
   letter-spacing: -0.02em;
 }
 
-.navbar p {
+.navbar span {
   margin: 0;
 
   color: var(--text-secondary);
@@ -162,7 +162,7 @@ body {
   padding: 60px 0;
 }
 
-.welcome h2 {
+.welcome h1 {
   max-width: 600px;
 
   margin: 0 0 14px;
@@ -626,7 +626,7 @@ button:disabled {
     display: block;
   }
 
-  .navbar p {
+  .navbar span {
     display: none;
   }
 
@@ -651,7 +651,7 @@ button:disabled {
     padding: 40px 0;
   }
 
-  .welcome h2 {
+  .welcome h1 {
     font-size: 40px;
   }
 }
@@ -975,4 +975,89 @@ button:disabled {
     right: 0;
     min-width: 200px;
   }
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.site-footer {
+  width: min(1200px, calc(100% - 48px));
+
+  margin: auto auto 0;
+
+  padding: 28px 0 32px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  border-top: 1px solid var(--border);
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+}
+
+.site-footer > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.site-footer strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.site-footer span {
+  color: var(--text-secondary);
+}
+
+.footer-credit {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.contract-addresses {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding-top: 4px;
+}
+
+.contract-addresses a {
+  color: var(--accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.contract-addresses a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .site-footer {
+    width: min(100% - 32px, 600px);
+
+    text-align: left;
+  }
+}
+
+/* =========================================================
+   ORGANIZATION
+   ========================================================= */
+
+.organization {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.etherauthority-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }

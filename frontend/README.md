@@ -6,26 +6,27 @@ The application provides a Web3 interface for interacting with the StakeVault sm
 
 ## Features
 
-* 🔗 **Multi-wallet Web3 connection**
+- 🔗 **Multi-wallet Web3 connection**
 
-  * MetaMask
-  * WalletConnect-compatible wallets
-  * Coinbase Wallet
-*  **STAKE token balance tracking**
-*  **Approve and stake STAKE tokens**
-*  **Withdraw staked tokens**
-*  **Real-time REWARD accrual**
-*  **Claim staking rewards**
-*  **Unstake and exit**
-*  **Live staking statistics**
+  - MetaMask
+  - WalletConnect-compatible wallets
+  - Coinbase Wallet
 
-  * Total staked
-  * Reward emission rate
-  * Remaining reward pool
-*  **Automatic blockchain state refresh**
-*  **Foundry/Anvil local network support**
-*  **React + Vite frontend**
-*  **Ethers.js Web3 integration**
+- **STAKE token balance tracking**
+- **Approve and stake STAKE tokens**
+- **Withdraw staked tokens**
+- **Real-time REWARD accrual**
+- **Claim staking rewards**
+- **Unstake and exit**
+- **Live staking statistics**
+
+- Total staked
+- Reward emission rate
+- Remaining reward pool
+- **Automatic blockchain state refresh**
+- **Foundry/Anvil local network support**
+- **React + Vite frontend**
+- **Ethers.js Web3 integration**
 
 ## Architecture
 
@@ -80,12 +81,12 @@ The frontend interacts with the StakeVault protocol through the deployed contrac
 
 The dashboard can expose protocol-level information such as:
 
-* Total value staked
-* Reward emission rate
-* Remaining reward pool
-* Current reward accrual
-* User staking position
-* User claimable rewards
+- Total value staked
+- Reward emission rate
+- Remaining reward pool
+- Current reward accrual
+- User staking position
+- User claimable rewards
 
 ## Local Development
 
@@ -173,14 +174,14 @@ Earn REWARD Tokens
 
 ## Technology Stack
 
-* **React**
-* **Vite**
-* **Ethers.js**
-* **JavaScript**
-* **Solidity**
-* **Foundry**
-* **Anvil**
-* **OpenZeppelin**
+- **React**
+- **Vite**
+- **Ethers.js**
+- **JavaScript**
+- **Solidity**
+- **Foundry**
+- **Anvil**
+- **OpenZeppelin**
 
 ## Project Structure
 
@@ -208,23 +209,23 @@ The frontend is intended to provide a clean interface for testing and demonstrat
 
 Future improvements may include:
 
-* 📈 Reward and staking history charts
-* 🔔 Transaction status notifications
-* 🌐 Network switching
-* 🌓 Dark/light theme
-* 📱 Mobile-responsive dashboard
-* 🧾 Transaction history
-* ⏱️ Reward countdowns and emission information
-* 🛡️ Improved transaction/error handling
-* 🔐 Additional wallet connection options
+- 📈 Reward and staking history charts
+- 🔔 Transaction status notifications
+- 🌐 Network switching
+- 🌓 Dark/light theme
+- 📱 Mobile-responsive dashboard
+- 🧾 Transaction history
+- ⏱️ Reward countdowns and emission information
+- 🛡️ Improved transaction/error handling
+- 🔐 Additional wallet connection options
 
 ## Related Contracts
 
 The frontend is designed to work with the StakeVault smart-contract system, including:
 
-* `StakingVault.sol`
-* `StakeToken.sol`
-* `RewardToken.sol`
+- `StakingVault.sol`
+- `StakeToken.sol`
+- `RewardToken.sol`
 
 The smart contracts contain the protocol's core staking and reward logic. The frontend is responsible for presenting that functionality and submitting user-authorized transactions.
 
