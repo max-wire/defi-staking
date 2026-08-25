@@ -76,48 +76,41 @@ function App() {
       )}
 
       <footer className="site-footer">
-        <div>
+        <div className="footer-brand">
           <strong>StakeVault</strong>
           <span>DeFi Staking Protocol</span>
         </div>
 
         <div className="contract-addresses">
-          <span>
-            StakeToken:{" "}
-            <a
-              href={`https://sepolia.etherscan.io/address/${CONTRACTS.stakeToken}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {CONTRACTS.stakeToken}
-            </a>
-          </span>
+          <span className="footer-heading">Contracts</span>
 
-          <span>
-            RewardToken:{" "}
-            <a
-              href={`https://sepolia.etherscan.io/address/${CONTRACTS.rewardToken}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {CONTRACTS.rewardToken}
-            </a>
-          </span>
+          <a
+            href={`https://sepolia.etherscan.io/address/${CONTRACTS.stakeToken}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            StakeToken ↗
+          </a>
 
-          <span>
-            StakingVault:{" "}
-            <a
-              href={`https://sepolia.etherscan.io/address/${CONTRACTS.stakingVault}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {CONTRACTS.stakingVault}
-            </a>
-          </span>
+          <a
+            href={`https://sepolia.etherscan.io/address/${CONTRACTS.rewardToken}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            RewardToken ↗
+          </a>
+
+          <a
+            href={`https://sepolia.etherscan.io/address/${CONTRACTS.stakingVault}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            StakingVault ↗
+          </a>
         </div>
 
         <div className="footer-credit">
-          <span>Built by: Maxwell Wire</span>
+          <span>Built by Maxwell Wire</span>
 
           <div className="organization">
             <img
@@ -126,7 +119,7 @@ function App() {
               className="etherauthority-logo"
             />
 
-            <span>Organization: EtherAuthority</span>
+            <span>EtherAuthority</span>
           </div>
         </div>
       </footer>
