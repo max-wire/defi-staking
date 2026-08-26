@@ -2,27 +2,41 @@
 
 A full-stack DeFi staking protocol built with **Solidity, Foundry, React, Vite, Ethers.js, and Wagmi**.
 
-StakeVault allows users to stake ERC-20 tokens and earn rewards over time based on a configurable reward emission rate. The protocol uses a **finite reward pool**, ensuring that rewards cannot exceed the amount of reward tokens funded into the staking vault.
+StakeVault allows users to stake ERC-20 tokens and earn rewards over time based on a configurable reward emission rate.
 
-The project includes a complete smart contract system, a comprehensive Foundry test suite, deployment scripts, and a React frontend that interacts directly with deployed smart contracts.
+The protocol uses a **finite reward pool**, ensuring that rewards cannot exceed the amount of REWARD tokens funded into the staking vault.
+
+The project includes:
+
+* Production-ready Solidity smart contracts
+* Comprehensive Foundry test suite
+* Deployment scripts
+* Ethereum Sepolia testnet deployment
+* React/Vite frontend
+* Wagmi wallet integration
+* Ethers.js contract interaction
+* Real-time blockchain data refresh
+* Frontend validation for staking and withdrawal operations
 
 ---
 
-# Live Sepolia Deployment
+## Live Sepolia Deployment
 
-Due to a temporary network issue with the Sky network, StakeVault was deployed to the **Ethereum Sepolia testnet** as requested by the project team.
+StakeVault is deployed on the **Ethereum Sepolia testnet**.
 
-## Live Application
+### Live Application
 
-**https://defi-staking-c6qp6kvzu-wire4.vercel.app/**
+https://defi-staking-lxp59o5zy-wire4.vercel.app/
 
-## Network
+### Network
 
 * **Network:** Ethereum Sepolia
 * **Chain ID:** 11155111
 * **Deployment Type:** Testnet
 * **Frontend:** Vercel
-* **Wallet:** MetaMask / WalletConnect / Coinbase Wallet
+* **Wallets:** MetaMask, WalletConnect, Coinbase Wallet
+
+---
 
 ## Deployed Smart Contracts
 
@@ -32,234 +46,340 @@ Due to a temporary network issue with the Sky network, StakeVault was deployed t
 | RewardToken  | `0x1D1A21d7468040b306d06E3f1c6c30eeD249F380` |
 | StakingVault | `0x9A8a5DdEC15F4B8822BF10E849B5C465D6cf2C1e` |
 
-The frontend is configured with the deployed Sepolia contract addresses and interacts with the contracts using **Wagmi and Ethers.js**.
-
-The live deployment has been tested for:
-
-* Wallet connection
-* STAKE balance retrieval
-* REWARD balance retrieval
-* Staking
-* Token approval
-* Reward accrual
-* Reward claiming
-* Withdrawals
-* Exit functionality
-* Live protocol statistics
+The frontend is configured with these deployed Sepolia contract addresses and interacts with them using **Wagmi and Ethers.js**.
 
 ---
 
-# Frontend Deployment
+## Application Features
 
-The StakeVault frontend is deployed using **Vercel**.
+### Staking
 
-## Production URL
+Users can:
 
-**https://defi-staking-c6qp6kvzu-wire4.vercel.app/**
+* View their STAKE balance
+* Approve the StakingVault to spend STAKE
+* Stake STAKE tokens
+* View their current staking position
+* Withdraw part of their position
+* Withdraw their complete position through `exit()`
 
-The Vercel deployment is connected to the GitHub repository and can be automatically updated when changes are pushed to the `main` branch.
+The frontend validates the user's STAKE balance before starting the approval and staking flow.
 
-The frontend is configured for Ethereum Sepolia:
+If a user attempts to stake more STAKE than they own, the transaction is prevented instead of sending a transaction that would fail on-chain.
 
-```text
-Chain ID: 11155111
-Network: Ethereum Sepolia
-```
+### Rewards
 
-The frontend interacts directly with the deployed smart contracts.
+Users can:
 
-**No private keys are exposed to the frontend or stored in the Vercel deployment.**
+* View their REWARD balance
+* View accrued rewards
+* Claim accrued rewards
+* Exit while claiming rewards and withdrawing their entire stake
 
-The deployment wallet and frontend configuration are intentionally separated:
+Rewards are distributed according to the configured emission rate and each user's share of the total staking pool.
 
-```text
-Deployment wallet
-       │
-       │ PRIVATE_KEY
-       ▼
-    Foundry
-       │
-       │ deploys
-       ▼
-Ethereum Sepolia
-       │
-       ├── StakeToken
-       ├── RewardToken
-       └── StakingVault
+### Protocol Statistics
 
-Frontend
-   │
-   ▼
-Vercel
-   │
-   ▼
-Contract addresses
-   │
-   ▼
-Ethereum Sepolia
-```
+The dashboard displays:
+
+* Total STAKE deposited in the vault
+* REWARD emission rate
+* Remaining funded reward pool
+
+`Total Staked` represents the **global amount deposited into the vault**, while `Staked Amount` represents the connected user's individual position.
 
 ---
-
-# Features
 
 ## Smart Contracts
 
-* ERC-20 `StakeToken`
-* ERC-20 `RewardToken`
-* `StakingVault` for staking and reward distribution
-* Time-based reward accrual
-* Configurable reward emission rate
-* Finite reward pool
-* Multiple user staking support
-* Proportional reward distribution
+### StakeToken
+
+`StakeToken` is the ERC-20 token users deposit into the staking vault.
+
+Configuration:
+
+* **Name:** DeFi Stake Token
+* **Symbol:** STAKE
+* **Decimals:** 18
+* **Initial Supply:** 1,000,000 STAKE
+* **Minting:** Fixed supply in V1
+
+The entire initial supply is minted to the deployment wallet.
+
+### RewardToken
+
+`RewardToken` is the ERC-20 token distributed to stakers as rewards.
+
+The token is held by the reward funding account and transferred into the `StakingVault` through `fundRewards()`.
+
+The vault does not mint reward tokens.
+
+### StakingVault
+
+`StakingVault` manages:
+
+* STAKE deposits
+* User staking positions
+* Reward accounting
+* Reward distribution
 * Reward claiming
-* Partial and full withdrawals
-* `exit()` functionality for withdrawing stake and claiming rewards
-* Owner-controlled reward funding
-* Owner-controlled reward rate updates
+* Withdrawals
+* Full exits
+* Reward funding
+* Reward emission rate configuration
 * Emergency pause functionality
-* Reentrancy protection
+
+The contract uses:
+
+* `ReentrancyGuard`
+* `Pausable`
+* `SafeERC20`
 * Custom errors
-* Event emission for major protocol actions
+* Event-based state tracking
+* Cumulative `rewardPerToken` accounting
+
+---
+
+## Reward Mechanism
+
+Rewards are emitted over time according to the configured reward rate.
+
+Conceptually:
+
+```text
+reward = elapsedTime × rewardRate
+```
+
+Rewards are distributed proportionally according to each user's share of the total staked amount.
+
+The protocol uses cumulative `rewardPerToken` accounting:
+
+```solidity
+rewardPerToken =
+    rewardPerTokenStored
+    + (newRewards * PRECISION / totalStaked);
+```
+
+A user's rewards are calculated using:
+
+```solidity
+userReward =
+    userStake
+    * (currentRewardPerToken - userRewardPerTokenPaid)
+    / PRECISION;
+```
+
+This allows the protocol to support multiple users without iterating over every staker whenever rewards are updated.
+
+---
+
+## Finite Reward Pool
+
+StakeVault does not mint REWARD tokens.
+
+Rewards must first be funded into the vault:
+
+```solidity
+fundRewards(uint256 amount);
+```
+
+The protocol tracks the remaining reward emission budget through:
+
+```solidity
+rewardRemaining
+```
+
+The reward system ensures that the vault cannot account for more rewards than have been funded.
+
+When the funded reward pool is exhausted:
+
+```text
+Reward pool exhausted
+        ↓
+Reward emission stops
+        ↓
+Additional REWARD must be funded
+        ↓
+Emission can continue
+```
+
+This prevents the protocol from creating reward liabilities greater than the funded reward pool.
+
+---
+
+## Protocol Flow
+
+```text
+                         ┌─────────────────┐
+                         │   StakeToken    │
+                         │      ERC-20     │
+                         └────────┬────────┘
+                                  │
+                                  │ approve()
+                                  ▼
+                         ┌─────────────────┐
+                         │  StakingVault   │
+                         └────────┬────────┘
+                                  │
+                    ┌─────────────┴─────────────┐
+                    │                           │
+                    ▼                           ▼
+              User Position              Reward Accounting
+                    │                           │
+                    │                     rewardPerToken
+                    │                           │
+                    ▼                           ▼
+                withdraw()                 earned()
+                    │                           │
+                    │                           │
+                    └─────────────┬─────────────┘
+                                  │
+                                  ▼
+                           claimRewards()
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │   RewardToken   │
+                         │      ERC-20     │
+                         └─────────────────┘
+```
+
+---
+
+## User Lifecycle
+
+```text
+User
+ │
+ │ 1. Connect Wallet
+ ▼
+Frontend
+ │
+ │ 2. Check STAKE balance
+ ▼
+Sufficient Balance?
+ │
+ ├── No ──► Prevent transaction
+ │
+ └── Yes
+       │
+       ▼
+3. Check Allowance
+       │
+       ├── Sufficient ──► Skip approval
+       │
+       └── Insufficient
+              │
+              ▼
+        4. Approve STAKE
+              │
+              ▼
+        5. Stake STAKE
+              │
+              ▼
+        6. Earn Rewards
+              │
+              ├──────────────► claimRewards()
+              │
+              └──────────────► exit()
+                                      │
+                                      ├── Claim rewards
+                                      │
+                                      └── Withdraw all STAKE
+```
+
+---
 
 ## Frontend
 
-The project includes a React frontend that integrates directly with the deployed smart contracts.
+The frontend is built with:
 
-Features include:
+* React
+* Vite
+* Ethers.js
+* Wagmi
+
+### Wallet Support
+
+The application supports:
+
+* MetaMask
+* WalletConnect
+* Coinbase Wallet
+
+The frontend verifies that the connected wallet is using **Ethereum Sepolia** before interacting with the deployed contracts.
+
+### Frontend Features
 
 * Wallet connection
-* MetaMask support
-* WalletConnect support
-* Coinbase Wallet support
-* Automatic network detection
-* Ethereum Sepolia support
-* Local Anvil network support
-* STAKE token balance display
-* REWARD token balance display
-* Staked balance display
-* Total protocol stake
-* Reward rate display
+* Wallet address display
+* Wallet disconnection
+* STAKE balance
+* REWARD balance
+* User staking position
+* Global total staked amount
+* Reward emission rate
 * Remaining reward pool
 * Accrued rewards
 * Token approval
 * Staking
 * Withdrawal
 * Reward claiming
-* Exit functionality
+* Full exit
 * Automatic blockchain data refresh
+* Loading states
+* Transaction error handling
+* Insufficient balance validation
+* Maximum stake shortcut
 
 ---
 
-# Architecture
+## Frontend Validation
+
+The frontend performs validation before sending transactions.
+
+For staking:
 
 ```text
-                         ┌─────────────────┐
-                         │   StakeToken    │
-                         │    ERC-20       │
-                         └────────┬────────┘
-                                  │
-                                  │ stake()
-                                  ▼
-┌──────────────┐           ┌─────────────────┐           ┌──────────────┐
-│              │           │                 │           │              │
-│    Users     ├──────────►│   StakingVault  │◄──────────┤    Owner     │
-│              │           │                 │           │              │
-└──────────────┘           └────────┬────────┘           └──────┬───────┘
-                                   │                            │
-                                   │                            │
-                         ┌─────────▼─────────┐          fundRewards()
-                         │                   │◄──────────────────┘
-                         │ Reward Accounting │
-                         │                   │
-                         │ rewardPerToken   │
-                         │ earned()         │
-                         │ rewardRemaining  │
-                         └─────────┬─────────┘
-                                   │
-                                   │ claimRewards()
-                                   ▼
-                         ┌─────────────────┐
-                         │   RewardToken   │
-                         │     ERC-20      │
-                         └─────────────────┘
+User enters amount
+        ↓
+Check wallet STAKE balance
+        ↓
+amount > balance?
+   │             │
+  YES            NO
+   │             │
+   ▼             ▼
+Stop          Check allowance
+                 │
+                 ▼
+              approve()
+                 │
+                 ▼
+               stake()
 ```
 
----
+This prevents users from attempting to stake tokens they do not own.
 
-# Protocol Flow
-
-```text
-User
- │
- │ Approve STAKE
- ▼
-StakeToken.approve()
- │
- ▼
-StakingVault.stake()
- │
- ├── Transfers STAKE into vault
- ├── Updates totalStaked
- ├── Updates user balance
- └── Updates reward accounting
-         │
-         │ Time passes
-         ▼
-   rewardPerToken increases
-         │
-         ▼
-    User accrues rewards
-         │
-         ├──────────────► claimRewards()
-         │
-         └──────────────► exit()
-                               │
-                               ├── Claims rewards
-                               └── Withdraws all STAKE
-```
-
----
-
-# Reward Mechanism
-
-Rewards are emitted over time according to the configured reward rate.
-
-```text
-reward = elapsedTime × rewardRate
-```
-
-Rewards are distributed proportionally based on each user's share of the total staked amount.
-
-The reward system uses a cumulative `rewardPerToken` accounting model to efficiently calculate rewards for multiple users.
-
-Conceptually:
-
-```text
-rewardPerToken =
-    rewardPerTokenStored
-    + (newRewards × PRECISION / totalStaked)
-```
-
-A user's earned rewards are calculated from their staking balance and the increase in cumulative rewards per token.
-
-The protocol also maintains a finite reward pool:
+Approval and staking are separate blockchain operations:
 
 ```solidity
-rewardRemaining
+approve()
 ```
 
-Rewards cannot exceed the amount funded into the vault. Once the reward pool is exhausted, reward emissions stop until additional rewards are funded.
+only gives the `StakingVault` permission to spend STAKE.
 
-This prevents the protocol from creating reward liabilities greater than the available REWARD token balance.
+It does **not** transfer or provide STAKE to the user.
+
+The user must already hold sufficient STAKE tokens.
 
 ---
 
-# Project Structure
+## Project Structure
 
 ```text
 defi-staking/
+
 │
 ├── src/
 │   ├── staking/
@@ -283,6 +403,7 @@ defi-staking/
 │   │   ├── components/
 │   │   ├── contracts/
 │   │   ├── hooks/
+│   │   ├── utils/
 │   │   └── App.jsx
 │   │
 │   ├── .env.example
@@ -294,15 +415,29 @@ defi-staking/
 
 ---
 
-# Smart Contract Testing
+## Smart Contract Testing
 
 The protocol is tested using **Foundry**.
 
 The current test suite contains **80 passing tests** covering the STAKE token, REWARD token, and `StakingVault`.
 
-## Token Tests
+Run the test suite:
 
-Tests include:
+```bash
+forge test
+```
+
+For detailed traces:
+
+```bash
+forge test -vvv
+```
+
+### Test Coverage
+
+#### StakeToken
+
+Tests cover:
 
 * Initial supply
 * Token ownership
@@ -314,32 +449,46 @@ Tests include:
 * Total supply invariants
 * Balance checks
 
-## StakingVault Tests
+#### RewardToken
 
-Tests include:
+Tests cover:
+
+* Initial supply
+* Token ownership
+* Token metadata
+* Decimals
+* Transfers
+* Approvals
+* `transferFrom`
+* Total supply invariants
+* Balance checks
+
+#### StakingVault
+
+Tests cover:
 
 * Staking
 * Multiple staking operations
 * Withdrawals
 * Full withdrawals
-* Reward accrual over time
+* Reward accrual
 * Proportional reward distribution
-* Multiple user reward calculations
+* Multiple-user reward calculations
 * Reward claiming
 * Exit functionality
 * Reward funding
 * Reward rate updates
-* Pause and unpause functionality
-* Event emission verification
+* Pause/unpause
+* Event emission
 
-## Security and Edge Cases
+#### Security and Edge Cases
 
 The test suite also covers:
 
 * Zero-amount staking
 * Zero-amount withdrawals
-* Withdrawal attempts above deposited balances
-* Claiming rewards when no rewards exist
+* Withdrawals above deposited balance
+* Claiming when no rewards exist
 * Zero token address validation
 * Owner-only reward funding
 * Owner-only reward rate updates
@@ -353,36 +502,20 @@ The test suite also covers:
 * View function consistency
 * `totalStaked` accounting invariants
 
-Run the tests:
-
-```bash
-forge test
-```
-
-For more detailed output:
-
-```bash
-forge test -vvv
-```
-
 ---
 
-# Local Development
+## Local Development
 
-The production testnet deployment is Ethereum Sepolia. **Anvil is provided for local development and testing only.**
-
-## Prerequisites
+### Prerequisites
 
 Install:
 
 * Foundry
 * Node.js
 * npm
-* A browser wallet such as MetaMask
+* MetaMask or another supported browser wallet
 
-## Installation
-
-Clone the repository:
+### Clone the Repository
 
 ```bash
 git clone <your-repository-url>
@@ -394,7 +527,7 @@ Navigate into the project:
 cd defi-staking
 ```
 
-Install dependencies:
+Install Foundry dependencies:
 
 ```bash
 forge install
@@ -406,7 +539,7 @@ Build the contracts:
 forge build
 ```
 
-Run the tests:
+Run tests:
 
 ```bash
 forge test
@@ -414,7 +547,7 @@ forge test
 
 ---
 
-# Running a Local Blockchain
+## Running a Local Blockchain
 
 Start Anvil:
 
@@ -422,13 +555,13 @@ Start Anvil:
 anvil
 ```
 
-By default, Anvil runs at:
+Default RPC:
 
 ```text
 http://127.0.0.1:8545
 ```
 
-The local chain ID is:
+Local chain ID:
 
 ```text
 31337
@@ -436,11 +569,9 @@ The local chain ID is:
 
 ---
 
-# Deployment
+## Deployment
 
-## Sepolia Testnet
-
-The production testnet deployment was performed using **Foundry**.
+### Sepolia Testnet
 
 Create a `.env` file:
 
@@ -449,7 +580,7 @@ PRIVATE_KEY=your_private_key
 SEPOLIA_RPC_URL=your_sepolia_rpc_url
 ```
 
-Deploy using:
+Deploy:
 
 ```bash
 forge script script/DeployStaking.s.sol:DeployStaking \
@@ -463,18 +594,18 @@ The deployment creates:
 2. `RewardToken`
 3. `StakingVault`
 
-The deployment script also:
+The deployment process also:
 
 * Funds the reward pool
 * Configures the reward emission rate
 
-After deployment, the resulting contract addresses are configured in:
+The deployed addresses are configured in:
 
 ```text
 frontend/src/contracts/config.js
 ```
 
-For the current Sepolia deployment:
+Current configuration:
 
 ```javascript
 export const CONTRACTS = {
@@ -489,13 +620,13 @@ export const NETWORK = {
 };
 ```
 
-> **Security:** Never commit `.env` or private keys to the repository. The private key is only used by the deployment environment and is not required by the frontend.
+> **Security:** Never commit `.env` files or private keys to the repository. The deployment private key is not required by the frontend.
 
 ---
 
-# Local Development Deployment
+## Local Deployment
 
-For local development, start Anvil:
+Start Anvil:
 
 ```bash
 anvil
@@ -515,9 +646,7 @@ forge script script/DeployStaking.s.sol:DeployStaking \
     --broadcast
 ```
 
-After deployment, configure the frontend with the locally deployed contract addresses.
-
-Example:
+Configure the frontend with the locally deployed addresses:
 
 ```javascript
 export const CONTRACTS = {
@@ -534,9 +663,9 @@ export const NETWORK = {
 
 ---
 
-# Frontend
+## Frontend Development
 
-Navigate to the frontend directory:
+Navigate into the frontend:
 
 ```bash
 cd frontend
@@ -554,30 +683,23 @@ Start the development server:
 npm run dev
 ```
 
-For local development, the application can connect to the local Anvil blockchain.
+The frontend can be configured for either:
 
-For the deployed application, use the production configuration for **Ethereum Sepolia**.
+* Ethereum Sepolia
+* Local Anvil
 
-Make sure:
+Before interacting with the protocol, make sure:
 
-1. The selected network matches the configured contract network.
-2. The contracts have been deployed.
-3. The contract addresses are configured correctly.
-4. Your wallet is connected to the correct network.
-
-Update the contract configuration in:
-
-```text
-frontend/src/contracts/config.js
-```
+1. The selected network matches the configured network.
+2. The contracts are deployed.
+3. The contract addresses are correct.
+4. The wallet is connected to the correct network.
 
 ---
 
-# Wallet Network Configuration
+## Wallet Network Configuration
 
-## Ethereum Sepolia
-
-For the live deployment, configure your wallet to use:
+### Ethereum Sepolia
 
 ```text
 Network Name: Ethereum Sepolia
@@ -585,9 +707,7 @@ Chain ID: 11155111
 Currency Symbol: ETH
 ```
 
-## Foundry Local
-
-For local development:
+### Foundry Local
 
 ```text
 Network Name: Foundry Local
@@ -598,108 +718,139 @@ Currency Symbol: ETH
 
 ---
 
-# Available Smart Contract Functions
+## Available Smart Contract Functions
 
-## User Functions
+### User Functions
 
-### `stake`
+#### `stake`
 
 ```solidity
 stake(uint256 amount)
 ```
 
-Stake STAKE tokens in the vault.
+Deposits STAKE tokens into the vault.
 
-### `withdraw`
+#### `withdraw`
 
 ```solidity
 withdraw(uint256 amount)
 ```
 
-Withdraw a specified amount of staked tokens.
+Withdraws a specified amount of the user's staked STAKE.
 
-### `claimRewards`
+#### `claimRewards`
 
 ```solidity
 claimRewards()
 ```
 
-Claim all accrued REWARD tokens.
+Claims all currently accrued REWARD tokens.
 
-### `exit`
+#### `exit`
 
 ```solidity
 exit()
 ```
 
-Claim accrued rewards and withdraw the user's entire staking position.
+Claims accrued rewards and withdraws the user's entire staking position.
 
-## Admin Functions
+### Admin Functions
 
-### `fundRewards`
+#### `fundRewards`
 
 ```solidity
 fundRewards(uint256 amount)
 ```
 
-Fund the vault with additional REWARD tokens.
+Funds the vault with REWARD tokens.
 
-### `setRewardRate`
+#### `setRewardRate`
 
 ```solidity
 setRewardRate(uint256 newRate)
 ```
 
-Update the reward emission rate.
+Updates the REWARD emission rate.
 
-### `pause`
+#### `pause`
 
 ```solidity
 pause()
 ```
 
-Pause staking operations.
+Pauses staking, withdrawals, and reward claims.
 
-### `unpause`
+#### `unpause`
 
 ```solidity
 unpause()
 ```
 
-Resume staking operations.
+Resumes normal staking operations.
 
 ---
 
-# Security Considerations
+## Security Considerations
 
-The protocol includes several security mechanisms:
+StakeVault includes several security mechanisms:
 
-* `ReentrancyGuard` protection for token-moving operations
-* `SafeERC20` for secure ERC-20 interactions
-* Owner-only administrative functions
+* `ReentrancyGuard`
+* `SafeERC20`
+* Owner-controlled administrative functions
 * Input validation
 * Zero-address validation
 * Custom errors
 * Emergency pause functionality
 * Finite reward pool accounting
 * Reward emission caps
-* Accounting tests and invariants
+* Accounting invariants
+* Comprehensive Foundry tests
 
 The frontend does not require or expose the deployment wallet's private key.
 
+The deployment wallet and frontend are intentionally separated:
+
+```text
+Deployment Wallet
+       │
+       │ PRIVATE_KEY
+       ▼
+     Foundry
+       │
+       │ deploys
+       ▼
+ Ethereum Sepolia
+       │
+       ├── StakeToken
+       ├── RewardToken
+       └── StakingVault
+
+
+Frontend
+   │
+   ▼
+ Vercel
+   │
+   ▼
+Contract Addresses
+   │
+   ▼
+Ethereum Sepolia
+```
+
 ---
 
-# Technology Stack
+## Technology Stack
 
-## Smart Contracts
+### Smart Contracts
 
 * Solidity
 * Foundry
 * OpenZeppelin
-* Anvil for local development
-* Ethereum Sepolia for testnet deployment
+* Anvil
+* Ethereum Sepolia
 
-## Frontend
+### Frontend
 
 * React
 * Vite
@@ -712,17 +863,17 @@ The frontend does not require or expose the deployment wallet's private key.
 
 ---
 
-# Future Improvements
+## Future Improvements
 
 Potential future improvements include:
 
-* Support for multiple staking pools
-* Different reward tokens
+* Multiple staking pools
+* Multiple reward tokens
 * Reward lockup periods
 * Early withdrawal penalties
 * Governance-controlled reward parameters
 * Mainnet deployment
-* Subgraph or indexing support
+* Subgraph/indexing support
 * Historical staking analytics
 * APY calculations
 * Transaction history
@@ -730,6 +881,6 @@ Potential future improvements include:
 
 ---
 
-# License
+## License
 
 MIT
