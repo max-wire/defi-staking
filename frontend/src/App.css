@@ -1115,7 +1115,8 @@ button:disabled {
 }
 
 .etherauthority-logo {
-  width: 28px;
-  height: 28px;
+  width: 90px;
+  height: 90px;
   object-fit: contain;
+  flex-shrink: 0;
 }

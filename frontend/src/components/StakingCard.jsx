@@ -4,7 +4,6 @@ import { formatTokenAmount } from "../utils/formatters";
 function StakingCard({
   stakeBalance,
   stakedAmount,
-  onApprove,
   onStake,
   onWithdraw,
   loading,
@@ -15,7 +14,6 @@ function StakingCard({
     if (!amount || Number(amount) <= 0) return;
 
     try {
-      await onApprove(amount);
       await onStake(amount);
       setAmount("");
     } catch {
@@ -85,6 +83,12 @@ function StakingCard({
 
           <span>STAKE</span>
         </div>
+        {amount && Number(amount) > Number(stakeBalance) && (
+          <div className="input-error">
+            Insufficient STAKE balance. You have{" "}
+            {formatTokenAmount(stakeBalance)} STAKE available.
+          </div>
+        )}
       </div>
 
       <div className="actions">
@@ -92,7 +96,12 @@ function StakingCard({
           type="button"
           className="primary-action"
           onClick={handleStake}
-          disabled={loading || !amount || Number(amount) <= 0}
+          disabled={
+            loading ||
+            !amount ||
+            Number(amount) <= 0 ||
+            Number(amount) > Number(stakeBalance)
+          }
         >
           {loading ? "Processing..." : "Approve & Stake"}
         </button>

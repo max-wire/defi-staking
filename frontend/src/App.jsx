@@ -58,8 +58,7 @@ function App() {
             <StakingCard
               stakeBalance={staking.stakeBalance}
               stakedAmount={staking.stakedAmount}
-              onApprove={staking.approveStake}
-              onStake={staking.stake}
+              onStake={staking.stakeWithApproval}
               onWithdraw={staking.withdraw}
               loading={staking.loading}
             />
